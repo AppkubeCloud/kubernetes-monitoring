@@ -1,50 +1,51 @@
-Prometheus Deployment and Configuration
-Deployment with Istio
-Steps to Deploy Prometheus Services Using Helm
-Prerequisites:
+**Prometheus deployment and configuration**
 
-Deploy Helm package Helm Installation Guide
-Create Namespace:
+- **Deployment with istio**
+- **Configuration**
+- **Create istio gateway and virtual service**
+- **Update scrape\_configs for new targets**
+- **Tekton pipeline to update scrape\_configs for new targets**
 
-bash
-Copy code
-kubectl create namespace prometheus
-Enable Istio Injection:
+**Deployment with istio:**
 
-bash
-Copy code
-kubectl label ns prometheus istio-injection=enabled
-Add Prometheus Community Repo:
+Steps to deploy prometheus services using helm
 
-bash
-Copy code
-helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
-Deploy Prometheus Using Helm:
+Pre-requisties: Deploy helm package [https://helm.sh/docs/intro/install/](https://helm.sh/docs/intro/install/)
 
-bash
-Copy code
-helm upgrade -i prometheus prometheus-community/prometheus \
-    --namespace prometheus \
-    --set alertmanager.persistentVolume.storageClass="gp2",server.persistentVolume.storageClass="gp2"
-Note:
+1. Create namespace
 
-If there are existing ClusterRole and ClusterRoleBindings related to Prometheus, delete them before deploying Prometheus.
-bash
-Copy code
-kubectl get clusterrolebinding | grep Prometheus
-kubectl delete clusterrole prometheusxxxx
-Configuration
-Update Prometheus Deployment Config for Path-Based URL
-Git clone the repository: https://github.com/AppkubeCloud/kubernetes-monitoring.git
-From the root directory, run the following command:
-bash
-Copy code
+_kubectl create namespace prometheus_
+
+1. Enable istio-injection
+
+_kubectl label ns prometheus istio-injection=enabled_
+
+1. Add Prometheus community repo
+
+_helm repo add prometheus-community_ [_https://prometheus-community.github.io/helm-charts_](https://prometheus-community.github.io/helm-charts)
+
+1. Deploy Prometheus using helm
+
+_helm upgrade -i prometheus prometheus-community/prometheus \_
+
+_--namespace prometheus \_
+
+_--set alertmanager.persistentVolume.storageClass="gp2",server.persistentVolume.storageClass="gp2"_
+
+**Note:**
+ If any existing clusterrole and cluster rolebindings related to Prometheus, delete before deploying Prometheus.
+_kubectl get clusterrolebinding | grep Prometheus_
+
+_kubectl delete clusterrole prometheusxxxx_
+
+**Configuration:**
+
+Update Prometheus deployment config for path based url
+
+- Git clone repo [https://github.com/AppkubeCloud/kubernetes-monitoring.git](https://github.com/AppkubeCloud/kubernetes-monitoring.git) from root directory run below command
+
 helm upgrade --reuse-values -f prometheus/values.yaml prometheus prometheus-community/prometheus --namespace prometheus
-Create Istio Gateway and Virtual Service
-Provide instructions and configuration details for creating Istio Gateway and Virtual Service.
 
-Update scrape_configs for New Targets
-Provide details on how to update the scrape_configs configuration for Prometheus with new targets.
+**Create istio gateway and virtual service:**
 
-Tekton Pipeline to Update scrape_configs for New Targets
-Include instructions or details about the Tekton pipeline used to automate the process of updating scrape_configs for new targets.
+**Update scrape\_configs**
