@@ -1,0 +1,57 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: mointoring-routes
+  namespace: istio-system
+spec:
+  hosts:
+  - "mointoring.synectiks.net"
+  gateways:
+  - appkube-api-gateway
+  http:
+    - match:
+      - uri:
+          prefix: "/tekton"
+      rewrite:
+        uri: "/"
+      route:
+      - destination:
+          host: tekton-dashboard.tekton-pipelines.svc.cluster.local
+          port:
+            number: 9097
+      corsPolicy:
+        allowHeaders:
+        - "Content-Type"
+        allowMethods:
+        - "GET"
+        - "POST"
+        - "PUT"
+        - "DELETE"
+        - "OPTIONS"
+        allowCredentials: true
+        allowOrigin:
+        - "*"
+    - match:
+      - uri:
+          prefix: /prometheus/
+      - uri:
+          prefix: /prometheus
+      rewrite:
+        uri: /
+      route:
+      - destination:
+          host: prometheus-server.prometheus.svc.cluster.local
+          port:
+            number: 80
+      corsPolicy:
+        allowHeaders:
+        - "Content-Type"
+        allowMethods:
+        - "GET"
+        - "POST"
+        - "PUT"
+        - "DELETE"
+        - "OPTIONS"
+        allowCredentials: true
+        allowOrigin:
+        - "*"
