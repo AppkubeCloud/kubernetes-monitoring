@@ -1,0 +1,34 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: appkube-monitoring-vs
+  namespace: istio-system
+spec:
+  hosts:
+  - "api.synectiks.net"
+  gateways:
+  - appkube-api-gateway
+  http:
+    - match:
+      - uri:
+          prefix: "/cmdb/management/prometheus"
+      rewrite:
+        uri: /management/prometheus
+      route:
+      - destination:
+          host: appkube-cmdb-service.appkube-cmdb-service.svc.cluster.local
+          port:
+            number: 6057
+      corsPolicy:
+        allowHeaders:
+        - "*"
+        allowMethods:
+        - GET
+        - POST
+        - PUT
+        - DELETE
+        - OPTIONS
+        allowCredentials: true
+        allowOrigin:
+        - "*"  
+      timeout: 30s
