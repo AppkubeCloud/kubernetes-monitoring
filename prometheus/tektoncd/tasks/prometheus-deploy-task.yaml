@@ -36,8 +36,8 @@ spec:
       - /bin/bash
       - -c
       - |
-        chmod +x /workspace/source/prometheus/tektoncd/deploy_prometheus.sh
-        sh /workspace/source/prometheus/tektoncd/deploy_prometheus.sh
+        chmod +x /workspace/source/prometheus/deploy_prometheus.sh
+        sh /workspace/source/prometheus/deploy_prometheus.sh
     - name: prometheus-istiogateway
       image: $(params.helm_image)
       script: |
