@@ -38,10 +38,10 @@ spec:
       - |
         chmod +x /workspace/source/prometheus/deploy_prometheus.sh
         sh /workspace/source/prometheus/deploy_prometheus.sh
-    - name: prometheus-istiogateway
-      image: $(params.helm_image)
-      script: |
+        #  - name: prometheus-istiogateway
+        #image: $(params.helm_image)
+        #script: |
         #Update Prometheus istio-gateway
-        echo "Update prometheus url gateway"
-        kubectl apply -f /workspace/source/prometheus/kubernetes-monitoring-vs.yaml
-        echo "Configuration successful Prometheus url: https://mointoring.synectiks.net/prometheus"
+        #echo "Update prometheus url gateway"
+        #kubectl apply -f /workspace/source/prometheus/kubernetes-monitoring-vs.yaml
+        #echo "Configuration successful Prometheus url: https://mointoring.synectiks.net/prometheus"
