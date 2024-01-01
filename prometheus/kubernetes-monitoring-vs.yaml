@@ -5,7 +5,7 @@ metadata:
   namespace: istio-system
 spec:
   hosts:
-  - "mointoring.synectiks.net"
+  - "monitoring.synectiks.net"
   gateways:
   - appkube-api-gateway
   http:
