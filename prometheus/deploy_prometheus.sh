@@ -29,10 +29,10 @@ cd $prom_dir
 # Deploy Prometheus using Helm 
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
 helm repo update
-helm upgrade -i prometheus prometheus-community/prometheus --namespace prometheus --set alertmanager.persistentVolume.storageClass="gp2",server.persistentVolume.storageClass="gp2" 
+helm upgrade -i prometheus prometheus-community/prometheus --namespace prometheus --set alertmanager.persistentVolume.storageClass="gp2",server.persistentVolume.storageClass="gp2" -f $prom_dir/values.yaml
 
 #Update Prometheus configuration
-helm upgrade --reuse-values -f $prom_dir/values.yaml prometheus prometheus-community/prometheus --namespace prometheus
+#helm upgrade --reuse-values -f $prom_dir/values.yaml prometheus prometheus-community/prometheus --namespace prometheus
 
 #Update Prometheus istio-gateway
 kubectl apply -f $prom_dir/kubernetes-monitoring-vs.yaml
