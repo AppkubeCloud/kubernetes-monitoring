@@ -1,0 +1,33 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: deploy-common-workflow-service
+  namespace: tekton-pipelines
+spec:
+  params:
+  - name: workingDir
+    description: working directory
+    default: ""
+  - name: SCRIPT
+    description: deployment script to run
+    type: string
+    default: "$@"
+  - name: ARGS
+    description: arguments to script
+    type: array
+    default: ["help"]
+  - name: image
+    description: image for the step
+  workspaces:
+  - name: source
+    description: source code
+  - name: secrets
+    description: aws secrets
+    mountPath: /tekton/home/.aws
+  steps:
+  - name: deploy-service
+    image: "$(params.image)"
+    workingDir: $(params.workingDir)
+    script: "$(params.SCRIPT)"
+    args:
+    - "$(params.ARGS)"

@@ -35,5 +35,5 @@ helm upgrade -i prometheus prometheus-community/prometheus --namespace prometheu
 #helm upgrade --reuse-values -f $prom_dir/values.yaml prometheus prometheus-community/prometheus --namespace prometheus
 
 #Update Prometheus istio-gateway
-kubectl apply -f $prom_dir/kubernetes-monitoring-vs.yaml
+kubectl apply -f /workspace/source/kubernetes-monitoring-vs.yaml
 echo "Prometheus deployment successful"

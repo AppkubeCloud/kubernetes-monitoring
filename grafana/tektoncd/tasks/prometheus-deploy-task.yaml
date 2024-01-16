@@ -1,0 +1,47 @@
+# This Task will do a prometheus deployment using helm 
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: prometheus-deploy-task
+  namespace: tekton-pipelines
+  labels:
+    app.kubernetes.io/version: "0.2"
+  annotations:
+    tekton.dev/categories: Deployment
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: helm
+    tekton.dev/platforms: "linux/amd64,linux/s390x,linux/ppc64le,linux/arm64"
+spec:
+  description: >-
+    This tasks will deploy and configure prometheus 
+
+  workspaces:
+    - name: source
+      optional: true
+    - name: secrets
+      optional: true
+      mountPath: /tekton/home/.aws
+  params:
+    - name: script
+      type: string
+      default: ""
+    - name: helm_image
+      description: "Specify a specific helm image"
+      default: "alpine/k8s:1.25.14"
+  steps:
+    - name: prometheus-deploy-configure
+      onError: continue
+      image: $(params.helm_image)
+      command:
+      - /bin/bash
+      - -c
+      - |
+        chmod +x /workspace/source/prometheus/deploy_prometheus.sh
+        sh /workspace/source/prometheus/deploy_prometheus.sh
+        #  - name: prometheus-istiogateway
+        #image: $(params.helm_image)
+        #script: |
+        #Update Prometheus istio-gateway
+        #echo "Update prometheus url gateway"
+        #kubectl apply -f /workspace/source/prometheus/kubernetes-monitoring-vs.yaml
+        #echo "Configuration successful Prometheus url: https://mointoring.synectiks.net/prometheus"

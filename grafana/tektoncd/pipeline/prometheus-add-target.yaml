@@ -1,0 +1,129 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: appkube-common-workflow-service-smoke
+  namespace: tekton-pipelines
+spec:
+  description: |
+    Pipeline to build, deploy and smoketest appkube common workflow services
+  params:
+  - name: repo-url
+    type: string
+    description: source repo - https://github.com/AppkubeCloud/common-workflow-service.git
+  - name: repo-revision
+    type: string
+    description: service revision to checkout. (branch, tag, sha, ref, etc...)
+  - name: workingDir
+    type: string
+  - name: image
+    type: string
+  - name: build-serverless-container
+    type: string
+  workspaces:
+  - name: shared-data
+    description: |
+      This workspace will receive the cloned git repo and be passed
+      to the next Task to list all cloned files and directories.
+  - name: aws-secrets
+    description: |
+      This workspace will hold aws credentials
+  - name: dockerconfig-secret
+    description: |
+      this workspace will hold docker config.json
+  tasks:
+  - name: service-repo
+    taskRef:
+      name: git-clone
+    workspaces:
+    - name: output
+      workspace: shared-data
+    params:
+    - name: url
+      value: $(params.repo-url)
+    - name: revision
+      value: $(params.repo-revision)
+  - name: build-kaniko
+    runAfter: ["service-repo"]
+    when:
+      - input: "$(params.build-serverless-container)"
+        operator: in
+        values: ["true"]
+    taskRef:
+      name: build-kaniko
+    workspaces:
+    - name: source
+      workspace: shared-data
+    - name: dockerconfig
+      workspace: dockerconfig-secret
+    params:
+    - name: IMAGE
+      value: synectiks/appkube-common-workflow-service:latest
+    - name: DOCKERFILE
+      value: $(workspaces.source.path)/Dockerfile
+    - name: CONTEXT
+      value: ./
+  - name: deploy-service
+    runAfter: ["build-kaniko"]
+    taskRef:
+      name: deploy-common-workflow-service
+    workspaces:
+    - name: source
+      workspace: shared-data
+    - name: secrets
+      workspace: aws-secrets
+    params:
+    - name: workingDir
+      value: $(params.workingDir)
+    - name: image
+      value: $(params.image)
+    - name: SCRIPT
+      value: |
+        export AWS_CONFIG_FILE=/tekton/home/.aws/config
+        export AWS_SHARED_CREDENTIALS_FILE=/tekton/home/.aws/credentials
+        aws configure list 
+        
+        export LAMBDA_ROLE=$1
+        echo "Using lambda role: $1"
+        
+        serverless plugin install -n serverless-offline
+        serverless deploy
+        
+    - name: ARGS
+      value:
+        - arn:aws:iam::657907747545:role/service-role/StepFunction_uc1_Requirement-role-2coy70yw
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: common-workflow-service-smoke-run
+  namespace: tekton-pipelines
+spec:
+  pipelineRef:
+    name: appkube-common-workflow-service-smoke
+  workspaces:
+  - name: shared-data
+    volumeClaimTemplate:
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi
+  - name: dockerconfig-secret
+    secret:
+      secretName: kaniko-secret
+  - name: aws-secrets
+    secret:
+      secretName: smoke-aws-credentials
+  params:
+  - name: repo-url
+    value: https://github.com/AppkubeCloud/common-workflow-service.git
+  - name: repo-revision
+    value: ''
+  - name: workingDir
+    value: $(workspaces.source.path)/workflow
+  - name: image
+    value: docker.io/synectiks/appkube-common-workflow-service:latest
+  - name: build-serverless-container
+    value: "false"

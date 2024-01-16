@@ -1,0 +1,46 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: prometheus-deploy-pipeline
+  namespace: tekton-pipelines
+spec:
+  description: |
+    Pipeline to build, deploy and prom
+  params:
+  - name: repo-url
+    type: string
+    description: source repo - https://github.com/AppkubeCloud/kubernetes-monitoring.git
+  - name: repo-revision
+    type: string
+    description: service revision to checkout. (branch, tag, sha, ref, etc...)
+  - name: workingDir
+    type: string
+  workspaces:
+  - name: shared-data
+    description: |
+      This workspace will receive the cloned git repo and be passed
+      to the next Task to list all cloned files and directories.
+  - name: aws-secrets
+    description: |
+      This workspace will hold aws credentials
+  tasks:
+  - name: service-repo
+    taskRef:
+      name: git-clone
+    workspaces:
+    - name: output
+      workspace: shared-data
+    params:
+    - name: url
+      value: $(params.repo-url)
+    - name: revision
+      value: $(params.repo-revision)
+  - name: prometheus-deploy
+    runAfter: ["service-repo"]
+    taskRef:
+      name: prometheus-deploy-task
+    workspaces:
+    - name: source
+      workspace: shared-data
+    - name: secrets
+      workspace: aws-secrets
