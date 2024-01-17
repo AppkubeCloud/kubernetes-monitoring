@@ -1,8 +1,8 @@
-# This Task will do a prometheus deployment using helm 
+# This Task will do a grafana deployment using helm 
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: prometheus-deploy-task
+  name: grafana-deploy-task
   namespace: tekton-pipelines
   labels:
     app.kubernetes.io/version: "0.2"
@@ -29,18 +29,16 @@ spec:
       description: "Specify a specific helm image"
       default: "alpine/k8s:1.25.14"
   steps:
-    - name: prometheus-deploy-configure
+    - name: grafana-deploy-configure
       onError: continue
       image: $(params.helm_image)
       command:
       - /bin/bash
       - -c
       - |
-        chmod +x /workspace/source/prometheus/deploy_prometheus.sh
-        sh /workspace/source/prometheus/deploy_prometheus.sh
+        chmod +x /workspace/source/grafana/deploy_grafana.sh
+        sh /workspace/source/grafana/deploy_grafana.sh
         #  - name: prometheus-istiogateway
-        #image: $(params.helm_image)
-        #script: |
         #Update Prometheus istio-gateway
         #echo "Update prometheus url gateway"
         kubectl apply -f /workspace/source/kubernetes-monitoring-vs.yaml

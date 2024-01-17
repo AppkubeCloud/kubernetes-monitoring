@@ -1,0 +1,27 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: grafana-deploy-pipelinerun
+  namespace: tekton-pipelines
+spec:
+  pipelineRef:
+    name: grafana-deploy-pipeline
+  workspaces:
+  - name: shared-data
+    volumeClaimTemplate:
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi
+  - name: aws-secrets
+    secret:
+      secretName: smoke-aws-credentials
+  params:
+  - name: repo-url
+    value: https://github.com/AppkubeCloud/kubernetes-monitoring.git
+  - name: repo-revision
+    value: ''
+  - name: workingDir
+    value: $(workspaces.source.path)/workflow

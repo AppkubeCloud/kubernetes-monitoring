@@ -55,3 +55,27 @@ spec:
         allowCredentials: true
         allowOrigin:
         - "*"
+    - match:
+      - uri:
+          prefix: /grafana/
+      - uri:
+          prefix: /grafana
+      rewrite:
+        uri: /
+      route:
+      - destination:
+          host: grafana.grafana.svc.cluster.local
+          port:
+            number: 80
+      corsPolicy:
+        allowHeaders:
+        - "Content-Type"
+        allowMethods:
+        - "GET"
+        - "POST"
+        - "PUT"
+        - "DELETE"
+        - "OPTIONS"
+        allowCredentials: true
+        allowOrigin:
+        - "*"
