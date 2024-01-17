@@ -1,51 +1,53 @@
-**Prometheus deployment and configuration**
+###Prometheus deployment and configuration
 
-- **Deployment with istio**
-- **Configuration**
-- **Create istio gateway and virtual service**
-- **Update scrape\_configs for new targets**
-- **Tekton pipeline to update scrape\_configs for new targets**
+- Deployment 
+- Configuration
 
-**Deployment with istio:**
+#### Deployment :
 
-Steps to deploy prometheus services using helm
+##### Pre-requisties: 
+- Deploy helm package https://helm.sh/docs/intro/install/
+- Deploy kubectl package
+ -  https://docs.aws.amazon.com/eks/latest/userguide/install-kubectl.html
+- Repo: 
+     - https://github.com/AppkubeCloud/kubernetes-monitoring/tree/grafana/prometheus
 
-Pre-requisties: Deploy helm package [https://helm.sh/docs/intro/install/](https://helm.sh/docs/intro/install/)
+###### Option-1: Deployment using script:
+-   Git clone https://github.com/AppkubeCloud/kubernetes-monitoring.git
+-   Go to /<%CLONE_DRT%>/kubernetes-monitoring/prometheus>
+-  Run # sh deploy_prometheus.sh
 
-1. Create namespace
+###### Option-2: Deployment using Tekton pipeline:
+ 1. Create tekton task if not exists
+ <%git_clone%></git_clone%/prometheus/tektoncd/tasks>/prometheus/tektoncd/tasks
+ kubectl apply -f prometheus-deploy-task.yaml
 
-_kubectl create namespace prometheus_
+ 1. Create tekton pipeline if not exists
+ <%git_clone%></git_clone%/prometheus/tektoncd/tasks>/prometheus/tektoncd/tasks
+ kubectl apply -f prometheus-deploy-pipeline.yaml
+ 1. Create tekton pipelinerun if not exists
+ <%git_clone%></git_clone%/prometheus/tektoncd/tasks>/prometheus/tektoncd/tasks
+ kubectl apply -f prometheus-deploy-pipelinerun.yaml
+ 
+ Tekton url: http://tekton.synectiks.net/#/about
 
-1. Enable istio-injection
+#### Configuration :
+- Prometheus url: https://monitoring.synectiks.net/prometheus/
+- Gateway & Virtualservice :  [Gateway](https://github.com/AppkubeCloud/kubernetes-monitoring/blob/main/prometheus/kubernetes-monitoring-vs.yaml "Gateway")  [Virtualservice](https://github.com/AppkubeCloud/kubernetes-monitoring/blob/main/prometheus/kubernetes-monitoring-vs.yaml "Virtualservice")
+- Auto discovery of services (Update Targets):
+###### Method-1:
+<%git_clone%>/prometheus/
+execute ./append_target.sh param1 param2 param3
+param1: job_name,param2: metrics_path, param3: new_target_ip
+Wait for few mins to config reload automatically.
+###### Method-2:
+Auto discovery of services based scrape config annotations 
+ex: [service.yaml](https://github.com/AppkubeCloud/appkube-cmdb-deployment/blob/main/helm/templates/service.yaml "service.yaml")
 
-_kubectl label ns prometheus istio-injection=enabled_
+ annotations:
+     prometheus.io/scrape: 'true'
+     prometheus.io/job: appkube-cmdb_test
+     prometheus.io/path: /management/prometheus
+     prometheus.io/port: '6057'
+     prometheus.io/label: environment=devtest,app=appkube_cmdb_test- 
 
-1. Add Prometheus community repo
-
-_helm repo add prometheus-community_ [_https://prometheus-community.github.io/helm-charts_](https://prometheus-community.github.io/helm-charts)
-
-1. Deploy Prometheus using helm
-
-_helm upgrade -i prometheus prometheus-community/prometheus \_
-
-_--namespace prometheus \_
-
-_--set alertmanager.persistentVolume.storageClass="gp2",server.persistentVolume.storageClass="gp2"_
-
-**Note:**
- If any existing clusterrole and cluster rolebindings related to Prometheus, delete before deploying Prometheus.
-_kubectl get clusterrolebinding | grep Prometheus_
-
-_kubectl delete clusterrole prometheusxxxx_
-
-**Configuration:**
-
-Update Prometheus deployment config for path based url
-
-- Git clone repo [https://github.com/AppkubeCloud/kubernetes-monitoring.git](https://github.com/AppkubeCloud/kubernetes-monitoring.git) from root directory run below command
-
-helm upgrade --reuse-values -f prometheus/values.yaml prometheus prometheus-community/prometheus --namespace prometheus
-
-**Create istio gateway and virtual service:**
-
-**Update scrape\_configs**
