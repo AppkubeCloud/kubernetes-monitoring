@@ -23,7 +23,7 @@ kubectl create namespace grafana
 kubectl label ns grafana istio-injection=enabled --overwrite=true
 
 # Change directory to the workspace
-prom_dir=/workspace/source/grafana
+graf_dir=/workspace/source/grafana
 cd $graf_dir
 
 # Deploy grafana using Helm

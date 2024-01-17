@@ -1,11 +1,11 @@
 apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
 metadata:
-  name: prometheus-deploy-pipelinerun
+  name: grafana-deploy-pipelinerun
   namespace: tekton-pipelines
 spec:
   pipelineRef:
-    name: prometheus-deploy-pipeline
+    name: grafana-deploy-pipeline
   workspaces:
   - name: shared-data
     volumeClaimTemplate:

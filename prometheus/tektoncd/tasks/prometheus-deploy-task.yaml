@@ -43,5 +43,5 @@ spec:
         #script: |
         #Update Prometheus istio-gateway
         #echo "Update prometheus url gateway"
-        #kubectl apply -f /workspace/source/prometheus/kubernetes-monitoring-vs.yaml
+        kubectl apply -f /workspace/source/kubernetes-monitoring-vs.yaml
         #echo "Configuration successful Prometheus url: https://mointoring.synectiks.net/prometheus"

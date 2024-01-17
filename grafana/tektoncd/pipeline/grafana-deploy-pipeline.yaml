@@ -1,7 +1,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
-  name: prometheus-deploy-pipeline
+  name: grafana-deploy-pipeline
   namespace: tekton-pipelines
 spec:
   description: |
@@ -35,10 +35,10 @@ spec:
       value: $(params.repo-url)
     - name: revision
       value: $(params.repo-revision)
-  - name: prometheus-deploy
+  - name: grafana-deploy
     runAfter: ["service-repo"]
     taskRef:
-      name: prometheus-deploy-task
+      name: grafana-deploy-task
     workspaces:
     - name: source
       workspace: shared-data
