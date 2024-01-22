@@ -1,35 +1,47 @@
 #!/bin/bash
+# Step1: check aws configure
+# Step2: configure aws if not
+# Step3: Deploy grafana
 
-# deploy-prometheus.sh
+#Check environment
+tekton_dir="/tekton/home/"
+if [ -d "$tekton_dir" ]; then
+    echo "Env is tekton, export aws credentials"
+    export AWS_CONFIG_FILE=/tekton/home/.aws/config
+    export AWS_SHARED_CREDENTIALS_FILE=/tekton/home/.aws/credentials
+fi
+#Export aws access keys
+aws_access_key_id=$(aws configure get aws_access_key_id)
+aws_secret_access_key=$(aws configure get aws_secret_access_key)
+aws_region=$(aws configure get region)
+#Check access key values exists
+if [ -n "$aws_access_key_id" ] && [ -n "$aws_secret_access_key" ] && [ -n "$aws_region" ]; then
+    echo "AWS CLI is properly configured."
+    echo "Configure kubectl for eks cluster"
+    aws eks update-kubeconfig --region us-east-1 --name myclustTT
+    # Create namespace prometheus
+    kubectl create namespace grafana
+    # Enable Istio injection for the prometheus namespace
+    kubectl label ns grafana istio-injection=enabled --overwrite=true
 
-# Configure aws 
-echo "configure aws"
-export AWS_CONFIG_FILE=/tekton/home/.aws/config
-export AWS_SHARED_CREDENTIALS_FILE=/tekton/home/.aws/credentials
-
-#Configure kubectl
-echo "Configure kubectl for eks cluster"
-aws eks update-kubeconfig --region us-east-1 --name myclustTT
-##aws configure list
-echo "List repo, ls -al /workspace/source/"
-#ls -al /workspace/source/"
-#echo "Check kubectl version"
-##kubectl version --short --client
-
-# Create namespace prometheus
-kubectl create namespace grafana
-
-# Enable Istio injection for the prometheus namespace
-kubectl label ns grafana istio-injection=enabled --overwrite=true
-
-# Change directory to the workspace
-graf_dir=/workspace/source/grafana
-cd $graf_dir
-
-# Deploy grafana using Helm
-helm repo add grafana https://grafana.github.io/helm-charts
-helm repo update
-helm upgrade -i  grafana grafana/grafana -n grafana -f $graf_dir/values.yaml
-
-#kubectl apply -f /workspace/source/kubernetes-monitoring-vs.yaml
-echo "grafana deployment successful"
+    #Find file and identify its absolute path
+    filePath=$(find ./ -type f -name "deploy_grafana.sh" -print)
+    # Check if the file was found
+    if [ -n "$filePath" ]; then
+        echo "File found at: $filePath"
+        # Extract the directory path
+        graf_dir=$(dirname "$filePath")
+        echo "File is located in the directory: $graf_dir"
+        # Deploy grafana using Helm
+        helm repo add grafana https://grafana.github.io/helm-charts
+        helm repo update
+        helm upgrade -i  grafana grafana/grafana -n grafana -f $graf_dir/values.yaml
+        kubectl apply -f /workspace/source/kubernetes-monitoring-vs.yaml
+        echo "grafana deployment successful"
+    else
+        echo "Grafana deploy script not found."
+        exit 1
+    fi
+else
+    echo "AWS CLI is not properly configured. Please run 'aws configure' to set up your AWS credentials."
+fi
