@@ -1,4 +1,4 @@
-###Grafana deployment and configuration
+### Grafana deployment and configuration
 
 #### Deployment :
 
@@ -43,12 +43,12 @@ kubectl apply -f grafana-deploy-pipelinerun.yaml
 - Grafana url: https://monitoring.synectiks.net/grafana/
 - Gateway & Virtualservice :  [Gateway](https://github.com/AppkubeCloud/kubernetes-monitoring/blob/main/prometheus/kubernetes-monitoring-vs.yaml "Gateway")  [Virtualservice](https://github.com/AppkubeCloud/kubernetes-monitoring/blob/main/prometheus/kubernetes-monitoring-vs.yaml "Virtualservice")
 
-#####** Login Credentials**
+##### ** Login Credentials**
 - Username: admin
 - Password:
 ```shell
 kubectl get secret --namespace grafana grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
 ```
-#####To add prometheus datasource manually
+##### To add prometheus datasource manually
 - Goto Grafana > Home > Connections > Datasource >Add new data source
 - Select Prometheus > enter url:  http://prometheus-server.prometheus.svc.cluster.local > Test and Save
