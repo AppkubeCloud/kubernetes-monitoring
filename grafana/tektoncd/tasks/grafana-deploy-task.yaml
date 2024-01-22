@@ -13,7 +13,7 @@ metadata:
     tekton.dev/platforms: "linux/amd64,linux/s390x,linux/ppc64le,linux/arm64"
 spec:
   description: >-
-    This tasks will deploy and configure prometheus 
+    This tasks will deploy and configure grafana 
 
   workspaces:
     - name: source
