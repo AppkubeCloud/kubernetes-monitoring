@@ -15,7 +15,8 @@
 ###### Option-1: Deployment using standalone script:
 -   Git clone https://github.com/AppkubeCloud/kubernetes-monitoring.git
 -   Go to /<%CLONE_DRT%>/kubernetes-monitoring/prometheus>
--  Run # ```shell
+-  execute
+```shell
 sh deploy_prometheus.sh
 ```
 
@@ -26,12 +27,12 @@ sh deploy_prometheus.sh
  kubectl apply -f prometheus-deploy-task.yaml
 ```
 
- 1. Create tekton pipeline if not exists
+ 2. Create tekton pipeline if not exists
  <%git_clone%></git_clone%/prometheus/tektoncd/tasks>/prometheus/tektoncd/tasks
 ```shell
  kubectl apply -f prometheus-deploy-pipeline.yaml
 ```
- 1. Create tekton pipelinerun if not exists
+ 3. Create tekton pipelinerun if not exists
  <%git_clone%></git_clone%/prometheus/tektoncd/tasks>/prometheus/tektoncd/tasks
 ```shell
  kubectl apply -f prometheus-deploy-pipelinerun.yaml
@@ -45,7 +46,8 @@ sh deploy_prometheus.sh
 - Auto discovery of services (Update Targets):
 ###### Method-1:
 <%git_clone%>/prometheus/
-execute ```shell
+execute 
+```shell
 ./append_target.sh param1 param2 param3
 ```
 param1: job_name,param2: metrics_path, param3: new_target_ip
@@ -55,10 +57,11 @@ Auto discovery of services based on scrape config annotations
 ex: [service.yaml](https://github.com/AppkubeCloud/appkube-cmdb-deployment/blob/main/helm/templates/service.yaml "service.yaml")
 
  Below annotations should be included as part of appkube service deployment
- 
- annotations:
-         prometheus.io/scrape: 'true'
-         prometheus.io/job: appkube-cmdb_test
-         prometheus.io/path: /management/prometheus
-         prometheus.io/port: '6057'
-         prometheus.io/label: environment=devtest,app=appkube_cmdb_test
+
+     annotations:
+             prometheus.io/scrape: 'true'
+             prometheus.io/job: appkube-cmdb_test
+             prometheus.io/path: /management/prometheus
+             prometheus.io/port: '6057'
+             prometheus.io/label: environment=devtest,app=appkube_cmdb_test
+    
