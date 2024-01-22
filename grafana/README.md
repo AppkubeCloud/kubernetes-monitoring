@@ -42,9 +42,9 @@ kubectl apply -f grafana-deploy-pipelinerun.yaml
 #### Configuration :
 - Grafana url: https://monitoring.synectiks.net/grafana/
 - Gateway & Virtualservice :  [Gateway](https://github.com/AppkubeCloud/kubernetes-monitoring/blob/main/prometheus/kubernetes-monitoring-vs.yaml "Gateway")  [Virtualservice](https://github.com/AppkubeCloud/kubernetes-monitoring/blob/main/prometheus/kubernetes-monitoring-vs.yaml "Virtualservice")
-##### Login Credentials
-Username: admin
-Password:
+#####** Login Credentials**
+- Username: admin
+- Password:
 ```shell
 kubectl get secret --namespace grafana grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
 ```
