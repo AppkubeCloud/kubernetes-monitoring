@@ -19,9 +19,9 @@ if [ -n "$aws_access_key_id" ] && [ -n "$aws_secret_access_key" ] && [ -n "$aws_
     echo "AWS CLI is properly configured."
     echo "Configure kubectl for eks cluster"
     aws eks update-kubeconfig --region us-east-1 --name myclustTT
-    # Create namespace prometheus
+    # Create namespace grafana
     kubectl create namespace grafana
-    # Enable Istio injection for the prometheus namespace
+    # Enable Istio injection for the grafana namespace
     kubectl label ns grafana istio-injection=enabled --overwrite=true
     exc_dir="-path /proc -o -path /sys -o -path /dev -o -path /run -o -path /var"
     # Find the file, excluding system directories
@@ -38,7 +38,7 @@ if [ -n "$aws_access_key_id" ] && [ -n "$aws_secret_access_key" ] && [ -n "$aws_
         helm repo add grafana https://grafana.github.io/helm-charts
         helm repo update
         helm upgrade -i  grafana grafana/grafana -n grafana -f $graf_dir/values.yaml
-        kubectl apply -f /workspace/source/kubernetes-monitoring-vs.yaml
+        kubectl apply -f $graf_dir/../kubernetes-monitoring-vs.yaml
         echo "grafana deployment successful"
     else
         echo "Grafana deploy script not found."
