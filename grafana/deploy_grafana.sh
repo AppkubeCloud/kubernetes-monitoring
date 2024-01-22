@@ -23,14 +23,16 @@ if [ -n "$aws_access_key_id" ] && [ -n "$aws_secret_access_key" ] && [ -n "$aws_
     kubectl create namespace grafana
     # Enable Istio injection for the prometheus namespace
     kubectl label ns grafana istio-injection=enabled --overwrite=true
-
+    exc_dir="-path /proc -o -path /sys -o -path /dev -o -path /run -o -path /var"
+    # Find the file, excluding system directories
+    file_path=$(find / -type d \( $exc_dir \) -prune -o -type f -name "deploy_grafana.sh" -print 2>/dev/null)
     #Find file and identify its absolute path
-    filePath=$(find ./ -type f -name "deploy_grafana.sh" -print)
+    #file_Path=$(find / -type f -name "deploy_grafana.sh" -print 2>/dev/null)
     # Check if the file was found
-    if [ -n "$filePath" ]; then
-        echo "File found at: $filePath"
+    if [ -n "$file_path" ]; then
+        echo "File found at: $file_path"
         # Extract the directory path
-        graf_dir=$(dirname "$filePath")
+        graf_dir=$(dirname "$file_path")
         echo "File is located in the directory: $graf_dir"
         # Deploy grafana using Helm
         helm repo add grafana https://grafana.github.io/helm-charts
