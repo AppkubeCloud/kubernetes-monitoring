@@ -11,6 +11,7 @@
  -  https://docs.aws.amazon.com/eks/latest/userguide/install-kubectl.html
 - Repo: 
      - https://github.com/AppkubeCloud/kubernetes-monitoring/tree/main/prometheus
+     - https://prometheus-community.github.io/helm-charts/
 
 ###### Option-1: Deployment using standalone script:
 -   Git clone https://github.com/AppkubeCloud/kubernetes-monitoring.git
