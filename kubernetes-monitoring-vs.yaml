@@ -79,3 +79,27 @@ spec:
         allowCredentials: true
         allowOrigin:
         - "*"
+    - match:
+      - uri:
+          prefix: /alert/
+      - uri:
+          prefix: /alert
+      rewrite:
+        uri: /
+      route:
+      - destination:
+          host: prometheus-alertmanager.prometheus.svc.cluster.local
+          port:
+            number: 9093
+      corsPolicy:
+        allowHeaders:
+        - "Content-Type"
+        allowMethods:
+        - "GET"
+        - "POST"
+        - "PUT"
+        - "DELETE"
+        - "OPTIONS"
+        allowCredentials: true
+        allowOrigin:
+        - "*"
