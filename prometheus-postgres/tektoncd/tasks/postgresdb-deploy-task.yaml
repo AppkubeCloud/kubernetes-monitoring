@@ -1,0 +1,41 @@
+# This Task will do a postgresdb deployment using helm 
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: postgres-deploy-task
+  namespace: tekton-pipelines
+  labels:
+    app.kubernetes.io/version: "0.2"
+  annotations:
+    tekton.dev/categories: Deployment
+    tekton.dev/pipelines.minVersion: "0.12.1"
+    tekton.dev/tags: helm
+    tekton.dev/platforms: "linux/amd64,linux/s390x,linux/ppc64le,linux/arm64"
+spec:
+  description: >-
+    This tasks will deploy and configure postgresdb 
+
+  workspaces:
+    - name: source
+      optional: true
+    - name: secrets
+      optional: true
+      mountPath: /tekton/home/.aws
+  params:
+    - name: script
+      type: string
+      default: ""
+    - name: helm_image
+      description: "Specify a specific helm image"
+      default: "alpine/k8s:1.25.14"
+  steps:
+    - name: postgresdb-deploy
+      onError: continue
+      image: $(params.helm_image)
+      command:
+      - /bin/bash
+      - -c
+      - |
+        chmod +x /workspace/source/prometheus-postgres/deploy_postgresqldb.sh
+        sh /workspace/source/prometheus-postgres/deploy_postgresqldb.sh
+        echo "Deployed postgresdb successful"
