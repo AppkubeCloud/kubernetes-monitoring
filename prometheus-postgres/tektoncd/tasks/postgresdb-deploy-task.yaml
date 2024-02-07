@@ -2,7 +2,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: postgres-deploy-task
+  name: postgresdb-deploy-task
   namespace: tekton-pipelines
   labels:
     app.kubernetes.io/version: "0.2"

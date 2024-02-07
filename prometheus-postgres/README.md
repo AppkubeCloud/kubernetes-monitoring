@@ -65,6 +65,8 @@ sh deploy_postgresql_exporter.sh
     kubectl port-forward --namespace postgresql svc/postgresql 5432:5432 &
     PGPASSWORD="$POSTGRES_PASSWORD" psql --host 127.0.0.1 -U postgres -d postgres -p 5432
 ```
+##### Test sample pg metric in prometheus
+- metric name: pg_stat_database_xact_commit
 
 #### Uninstall :
 
